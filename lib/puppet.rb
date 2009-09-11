@@ -165,6 +165,7 @@ module Puppet
     end
 end
 
+require 'puppet/status'
 require 'puppet/type'
 require 'puppet/network'
 require 'puppet/ssl'

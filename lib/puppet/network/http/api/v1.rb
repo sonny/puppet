@@ -54,7 +54,7 @@ module Puppet::Network::HTTP::API::V1
         # NOTE This specific hook for facts is ridiculous, but it's a *many*-line
         # fix to not need this, and our goal is to move away from the complication
         # that leads to the fix being too long.
-        return :singular if indirection == "facts"
+        return :singular if ["facts", "status"].include?(indirection)
 
         result = (indirection =~ /s$/) ? :plural : :singular
 

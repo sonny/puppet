@@ -16,10 +16,15 @@ describe "puppetmasterd" do
         Puppet[:certdnsnames] = "localhost"
 
         @@port = 12345
+
+        @orig_masterport = Puppet[:masterport]
+        @orig_server = Puppet[:server]
     end
 
     after {
         stop
+        Puppet[:masterport] = @orig_masterport
+        Puppet[:server] = @orig_server
 
         Puppet::SSL::Host.ca_location = :none
 
@@ -67,7 +72,22 @@ describe "puppetmasterd" do
         FileTest.exist?(@pidfile).should be_true
     end
 
-    it "should be serving status information over REST"
+    it "should be serving status information over REST" do
+      start
+      sleep 5
+      
+      Puppet[:masterport] = @@port 
+      Puppet[:server] = "localhost"
+
+      FileUtils.mkdir_p(File.dirname(Puppet.settings[:rest_authconfig]))
+      File.open(Puppet.settings[:rest_authconfig], "w") { |f|
+        f.puts "path /\nallow *\n"
+      }
+
+      Puppet::Status.terminus_class = :rest
+      result = Puppet::Status.find
+      result.not_on_fire?.should be_true
+    end
 
     it "should be serving status information over xmlrpc" do
         start
