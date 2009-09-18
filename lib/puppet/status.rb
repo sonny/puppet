@@ -11,7 +11,7 @@ class Puppet::Status
   end
 
   def to_json
-    1.to_json
+    {:alive => not_on_fire?}.to_json
   end
 
   # wrap included Puppet::Indirectory#find to allow 
