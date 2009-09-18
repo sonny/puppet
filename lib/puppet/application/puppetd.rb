@@ -176,7 +176,6 @@ Puppet::Application.new(:puppetd) do
         end
 
         require 'puppet/network/server'
-        # No REST handlers yet.
         server = Puppet::Network::Server.new(:xmlrpc_handlers => handlers, :port => Puppet[:puppetport])
 
         @daemon.server = server
@@ -225,7 +224,6 @@ Puppet::Application.new(:puppetd) do
 
         Puppet::Node::Facts.terminus_class = :facter
       
-        Puppet::Status.terminus_class = :rest
         # We need tomake the client either way, we just don't start it
         # if --no-client is set.
         @agent = Puppet::Agent.new(Puppet::Configurer)

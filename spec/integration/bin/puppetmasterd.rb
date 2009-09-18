@@ -3,6 +3,17 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 
 describe "puppetmasterd" do
+    before (:all) do
+        @serial_t = Tempfile.open("puppetmaster_integration_testing_serial")
+        @serial = @serial_t.path
+        @serial_t << ("%04X" % rand(1000000))
+        @serial_t.close
+    end
+  
+    after (:all) do
+        @serial_t.delete
+    end
+
     before do
         # Get a safe temporary file
         file = Tempfile.new("puppetmaster_integration_testing")
@@ -14,7 +25,7 @@ describe "puppetmasterd" do
         Puppet.settings[:confdir] = @dir
         Puppet.settings[:vardir] = @dir
         Puppet[:certdnsnames] = "localhost"
-
+        Puppet[:serial] = @serial
         @@port = 12345
 
         @orig_masterport = Puppet[:masterport]
@@ -45,6 +56,7 @@ describe "puppetmasterd" do
         args += " --user %s" % Puppet::Util::SUIDManager.uid
         args += " --group %s" % Puppet::Util::SUIDManager.gid
         args += " --autosign true"
+        args += " --serial %s" % @serial
     end
 
     def start(addl_args = "")
@@ -92,7 +104,7 @@ describe "puppetmasterd" do
     it "should be serving status information over xmlrpc" do
         start
 
-        sleep 0.5
+        sleep 5
 
         client = Puppet::Network::Client.status.new(:Server => "localhost", :Port => @@port)
 
