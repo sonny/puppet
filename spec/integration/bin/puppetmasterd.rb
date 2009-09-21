@@ -72,8 +72,25 @@ describe "puppetmasterd" do
     it "should be serving status information over xmlrpc" do
         start
 
-        sleep 0.5
+#        sleep 0.5
+sleep 5
+        client = Puppet::Network::Client.status.new(:Server => "localhost", :Port => @@port)
 
+        FileUtils.mkdir_p(File.dirname(Puppet[:autosign]))
+        File.open(Puppet[:autosign], "w") { |f|
+            f.puts Puppet[:certname]
+        }
+
+        client.cert
+        retval = client.status
+
+        retval.should == 1
+    end
+    it "should be serving status information over xmlrpc" do
+        start
+
+#        sleep 0.5
+sleep 5
         client = Puppet::Network::Client.status.new(:Server => "localhost", :Port => @@port)
 
         FileUtils.mkdir_p(File.dirname(Puppet[:autosign]))
