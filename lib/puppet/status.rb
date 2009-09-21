@@ -6,12 +6,12 @@ class Puppet::Status
 
   indirects :status, :terminus_class => :processor
 
-  def not_on_fire?
+  def alive?
     true
   end
 
   def to_json
-    {:alive => not_on_fire?}.to_json
+    {:alive => alive?}.to_json
   end
 
   # wrap included Puppet::Indirectory#find to allow 
